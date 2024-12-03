@@ -16,7 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import android.content.res.Configuration
-// ...
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,19 +51,50 @@ fun MessageCard(msg: Message) {
                 .clip(CircleShape)
                 .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
-
         Spacer(modifier = Modifier.width(8.dp))
 
-        Column {
+        var isExpanded by remember { mutableStateOf(false) }
+        Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(
                 text = msg.author,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleSmall
             )
 
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = msg.body)
+
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                shadowElevation = 1.dp,
+            ) {
+                Text(
+                    text = msg.body,
+                    modifier = Modifier.padding(all = 4.dp),
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
+}
+
+
+@Composable
+fun Conversation(messages: List<Message>) {
+    LazyColumn {
+        items(messages) { message ->
+            MessageCard(message)
+        }
+    }
+}
+
+object SampleData {
+    val conversationSample = listOf(
+        Message("Alice", "Hey, how's it going?"),
+        Message("Bob", "Pretty good, how about you?"),
+        Message("Alice", "I'm doing great! Jetpack Compose is amazing."),
+        Message("Bob", "Totally agree! Can't wait to build more apps with it.")
+    )
 }
 
 
@@ -71,11 +108,7 @@ fun MessageCard(msg: Message) {
 @Composable
 fun PreviewMessageCard() {
     MyApplicationTheme {
-        Surface {
-            MessageCard(
-                msg = Message("Lexi", "Take a look at Jetpack Compose, it's great!")
-            )
-        }
+        Conversation(SampleData.conversationSample)
     }
 }
 
