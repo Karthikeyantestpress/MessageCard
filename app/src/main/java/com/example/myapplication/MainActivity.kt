@@ -23,21 +23,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+// ...
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    MessageCard(Message("Android", "Jetpack Compose"))
-                }
+                Conversation(SampleData.conversationSample)
             }
         }
     }
 }
 
 data class Message(val author: String, val body: String)
+
+
 
 
 @Composable
@@ -49,11 +52,20 @@ fun MessageCard(msg: Message) {
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                .border(1.5.dp, MaterialTheme.colorScheme.secondary, CircleShape)
         )
         Spacer(modifier = Modifier.width(8.dp))
 
+        // We keep track if the message is expanded or not in this
+        // variable
         var isExpanded by remember { mutableStateOf(false) }
+        // surfaceColor will be updated gradually from one color to the other
+        val surfaceColor by animateColorAsState(
+            if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+            label = "",
+        )
+
+        // We toggle the isExpanded variable when we click on this Column
         Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(
                 text = msg.author,
@@ -66,10 +78,16 @@ fun MessageCard(msg: Message) {
             Surface(
                 shape = MaterialTheme.shapes.medium,
                 shadowElevation = 1.dp,
+                // surfaceColor color will be changing gradually from primary to surface
+                color = surfaceColor,
+                // animateContentSize will change the Surface size gradually
+                modifier = Modifier.animateContentSize().padding(1.dp)
             ) {
                 Text(
                     text = msg.body,
                     modifier = Modifier.padding(all = 4.dp),
+                    // If the message is expanded, we display all its content
+                    // otherwise we only display the first line
                     maxLines = if (isExpanded) Int.MAX_VALUE else 1,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -77,6 +95,7 @@ fun MessageCard(msg: Message) {
         }
     }
 }
+
 
 
 @Composable
@@ -93,7 +112,7 @@ object SampleData {
         Message("Alice", "Hey, how's it going?"),
         Message("Bob", "Pretty good, how about you?"),
         Message("Alice", "I'm doing great! Jetpack Compose is amazing."),
-        Message("Bob", "Totally agree! Can't wait to build more apps with it.")
+        Message("Bob", "Longest message display please whats up man Totally agree! Can't wait to build more apps with it.")
     )
 }
 
