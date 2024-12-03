@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import android.content.res.Configuration
 // ...
 
 class MainActivity : ComponentActivity() {
@@ -59,7 +60,14 @@ fun MessageCard(msg: Message) {
     }
 }
 
-@Preview
+
+
+@Preview(name = "Light Mode")
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    name = "Dark Mode"
+)
 @Composable
 fun PreviewMessageCard() {
     MyApplicationTheme {
