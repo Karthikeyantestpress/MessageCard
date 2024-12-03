@@ -58,7 +58,7 @@ fun MessageCard(msg: Message) {
 
         // We keep track if the message is expanded or not in this
         // variable
-        var isExpanded by remember { mutableStateOf(false) }
+        var isExpanded by remember { mutableStateOf(true) }
         // surfaceColor will be updated gradually from one color to the other
         val surfaceColor by animateColorAsState(
             if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
